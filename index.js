@@ -45,6 +45,7 @@ async function run() {
                 toyName: 1,
                 toyPhoto: 1,
                 sallerName: 1,
+                sellerEmail: 1,
                 subCategory: 1,
                 price: 1,
                 rating: 1,
