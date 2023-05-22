@@ -41,34 +41,34 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/toys/:text', async(req, res) =>{
-      console.log(req.params.text);
-      if(req.params.text == 'Baby Dolls' || req.params.text == 'Barbie' || req.params.text == 'American Girl'){
-        const result = await toyCollection.find({subCategory: req.params.text}).toArray();
-        return res.send(result);
-      }
-      const result = await toyCollection.find().toArray();
-      res.send(result)
-    })
-
     app.get('/toys/:id', async (req, res) => {
       const id = req.params.id;
       console.log(id);
       const query = { _id: new ObjectId(id) };
       const options = {
-          projection: {
-              toyName: 1,
-              toyPhoto: 1,
-              sallerName: 1,
-              sellerEmail: 1,
-              subCategory: 1,
-              price: 1,
-              rating: 1,
-              quantity: 1,
-              description: 1
-          }
+        projection: {
+          toyName: 1,
+          toyPhoto: 1,
+          sallerName: 1,
+          sellerEmail: 1,
+          subCategory: 1,
+          price: 1,
+          rating: 1,
+          quantity: 1,
+          description: 1
+        }
       };
       const result = await toyCollection.findOne(query, options);
+      res.send(result);
+    });
+    
+    app.get('/toys/:text', async (req, res) => {
+      console.log(req.params.text);
+      if (req.params.text == 'Baby Dolls' || req.params.text == 'Barbie' || req.params.text == 'American Girl') {
+        const result = await toyCollection.find({ subCategory: req.params.text }).toArray();
+        return res.send(result);
+      }
+      const result = await toyCollection.find().toArray();
       res.send(result);
     });
 
