@@ -27,18 +27,29 @@ async function run() {
 
     const toyCollection = client.db('toyDB').collection('toy');
 
+
+
     app.get('/toys', async (req, res) => {
-      const { sellerEmail } = req.query;
-      console.log(sellerEmail)
+      const { subCategory } = req.query;
       let query = {};
     
-      if (sellerEmail) {
-        query = { sellerEmail };
+      if (subCategory) {
+        query = { subCategory };
       }
     
       const result = await toyCollection.find(query).toArray();
       res.send(result);
     });
+
+    app.get('/toys/:text', async(req, res) =>{
+      console.log(req.params.text);
+      if(req.params.text == 'Baby Dolls' || req.params.text == 'Barbie' || req.params.text == 'American Girl'){
+        const result = await toyCollection.find({subCategory: req.params.text}).toArray();
+        return res.send(result);
+      }
+      const result = await toyCollection.find().toArray();
+      res.send(result)
+    })
 
     app.get('/toys/:id', async (req, res) => {
       const id = req.params.id;
