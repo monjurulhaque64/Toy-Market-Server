@@ -1,7 +1,8 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -23,18 +24,22 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const toyCollection = client.db('toyDB').collection('toy');
 
 
 
     app.get('/toys', async (req, res) => {
-      const { subCategory } = req.query;
+      const { subCategory , sellerEmail } = req.query;
       let query = {};
     
       if (subCategory) {
         query = { subCategory };
+      }
+
+      if (sellerEmail) {
+        query = { sellerEmail };
       }
     
       const result = await toyCollection.find(query).toArray();
@@ -46,31 +51,35 @@ async function run() {
       console.log(id);
       const query = { _id: new ObjectId(id) };
       const options = {
-        projection: {
-          toyName: 1,
-          toyPhoto: 1,
-          sallerName: 1,
-          sellerEmail: 1,
-          subCategory: 1,
-          price: 1,
-          rating: 1,
-          quantity: 1,
-          description: 1
-        }
+          projection: {
+              toyName: 1,
+              toyPhoto: 1,
+              sallerName: 1,
+              sellerEmail: 1,
+              subCategory: 1,
+              price: 1,
+              rating: 1,
+              quantity: 1,
+              description: 1
+          }
       };
       const result = await toyCollection.findOne(query, options);
       res.send(result);
     });
-    
-    app.get('/toys/:text', async (req, res) => {
+
+    app.get('/toys/:text', async(req, res) =>{
       console.log(req.params.text);
-      if (req.params.text == 'Baby Dolls' || req.params.text == 'Barbie' || req.params.text == 'American Girl') {
-        const result = await toyCollection.find({ subCategory: req.params.text }).toArray();
+      if(req.params.text == 'Baby Dolls' || req.params.text == 'Barbie' || req.params.text == 'American Girl'){
+        const result = await toyCollection.find({subCategory: req.params.text}).toArray();
         return res.send(result);
       }
       const result = await toyCollection.find().toArray();
-      res.send(result);
-    });
+      res.send(result)
+    })
+
+
+
+
 
     app.post('/toys', async (req, res) => {
       const newToy = req.body;
@@ -104,7 +113,7 @@ async function run() {
     })
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
